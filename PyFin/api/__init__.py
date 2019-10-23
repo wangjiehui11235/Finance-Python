@@ -20,9 +20,11 @@ from PyFin.api.DateUtilities import makeSchedule
 from PyFin.Analysis import transform
 from PyFin.Analysis.SeriesValues import SeriesValues
 from PyFin.api.Analysis import SIGN
+from PyFin.api.Analysis import AVG
 from PyFin.api.Analysis import EMA
 from PyFin.api.Analysis import MACD
 from PyFin.api.Analysis import RSI
+from PyFin.api.Analysis import MCORR
 from PyFin.api.Analysis import MA
 from PyFin.api.Analysis import MADecay
 from PyFin.api.Analysis import MMAX
@@ -95,9 +97,11 @@ __all__ = ["datesList",
            "transform",
            "SIGN",
            "SeriesValues",
+           "AVG",
            "EMA",
            "MACD",
            "RSI",
+           "MCORR",
            "MA",
            "MADecay",
            "MMAX",

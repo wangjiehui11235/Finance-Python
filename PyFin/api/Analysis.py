@@ -26,7 +26,9 @@ from PyFin.Analysis.TechnicalAnalysis import SecurityMovingStandardDeviation
 from PyFin.Analysis.TechnicalAnalysis import SecurityMovingCountedPositive
 from PyFin.Analysis.TechnicalAnalysis import SecurityMovingPositiveAverage
 from PyFin.Analysis.TechnicalAnalysis import SecurityMovingRSI
+from PyFin.Analysis.TechnicalAnalysis import SecurityMovingCorrelation
 from PyFin.Analysis.TechnicalAnalysis import SecuritySignValueHolder
+from PyFin.Analysis.TechnicalAnalysis import SecurityAverageValueHolder
 from PyFin.Analysis.TechnicalAnalysis import SecurityXAverageValueHolder
 from PyFin.Analysis.TechnicalAnalysis import SecurityMACDValueHolder
 from PyFin.Analysis.TechnicalAnalysis import SecuritySqrtValueHolder
@@ -112,6 +114,10 @@ def SIGN(x='x'):
     return SecuritySignValueHolder(x)
 
 
+def AVG(x='x'):
+    return SecurityAverageValueHolder(x)
+
+
 def EMA(window, x='x'):
     return SecurityXAverageValueHolder(window, x)
 
@@ -122,6 +128,10 @@ def MACD(short, long, x='x'):
 
 def RSI(window, x='x'):
     return SecurityMovingRSI(window, x)
+
+
+def MCORR(window, x='x', y='y'):
+    return SecurityMovingCorrelation(window, x, y)
 
 
 def MA(window, x='x'):
@@ -265,11 +275,11 @@ def ROUND(x):
 
 
 def SHIFT(x, n):
-    return SecurityShiftedValueHolder(x, n)
+    return SecurityShiftedValueHolder(n, x)
 
 
 def DELTA(x, n):
-    return SecurityDeltaValueHolder(x, n)
+    return SecurityDeltaValueHolder(n, x)
 
 
 def IIF(flag, left, right):

@@ -6,11 +6,12 @@ Created on 2015-2-12
 """
 
 import copy
-from PyFin.Analysis.SecurityValueHolders cimport SecurityValueHolder
+from PyFin.Analysis.SecurityValueHolders cimport SecurityStatelessSingleValueHolder
 from PyFin.Analysis.SecurityValueHolders cimport SecurityCombinedValueHolder
 from PyFin.Analysis.SecurityValueHolders cimport build_holder
 from PyFin.Math.Accumulators.IAccumulators cimport Sign
 from PyFin.Math.Accumulators.StatelessAccumulators cimport XAverage
+from PyFin.Math.Accumulators.StatelessAccumulators cimport Average
 from PyFin.Math.Accumulators.StatefulAccumulators cimport MACD
 from PyFin.Math.Accumulators.IAccumulators cimport Exp
 from PyFin.Math.Accumulators.IAccumulators cimport Log
@@ -32,16 +33,10 @@ from PyFin.Analysis.SeriesValues import s_maximum
 from PyFin.Analysis.SeriesValues import s_minimum
 
 
-cdef class SecurityStatelessSingleValueHolder(SecurityValueHolder):
-    def __init__(self, holderType, x, **kwargs):
-        super(SecurityStatelessSingleValueHolder, self).__init__()
-        self._compHolder = build_holder(x)
-        self._holderTemplate = holderType(x=str(self._compHolder), **kwargs)
-        self._innerHolders = {name: copy.deepcopy(self._holderTemplate) for name in self._compHolder.symbolList}
-        self._dependency = self._compHolder.fields
-
-    def __str__(self):
-        return str(self._holderTemplate)
+cdef class SecurityAverageValueHolder(SecurityStatelessSingleValueHolder):
+    def __init__(self, x):
+        super(SecurityAverageValueHolder, self).__init__(holderType=Average,
+                                                         x=x)
 
 
 cdef class SecurityXAverageValueHolder(SecurityStatelessSingleValueHolder):

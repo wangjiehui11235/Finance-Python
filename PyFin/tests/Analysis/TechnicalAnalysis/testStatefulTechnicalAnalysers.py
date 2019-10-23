@@ -33,6 +33,7 @@ from PyFin.Analysis.TechnicalAnalysis import SecurityMovingPositiveDifferenceAve
 from PyFin.Analysis.TechnicalAnalysis import SecurityMovingNegativeDifferenceAverage
 from PyFin.Analysis.TechnicalAnalysis import SecurityMovingRSI
 from PyFin.Analysis.TechnicalAnalysis import SecurityMovingLogReturn
+from PyFin.Analysis.TechnicalAnalysis import SecurityMovingCorrelation
 
 
 class TestStatefulTechnicalAnalysis(unittest.TestCase):
@@ -393,6 +394,69 @@ class TestStatefulTechnicalAnalysis(unittest.TestCase):
                 self.assertAlmostEqual(expected, calculated, 12, 'at index {0}\n'
                                                                  'expected:   {1:.12f}\n'
                                                                  'calculated: {2:.12f}'.format(i, expected, calculated))
+
+    def testSecurityMovingCorrelation(self):
+        window = 120
+        x = SecurityLatestValueHolder('close')
+        y = SecurityLatestValueHolder('open')
+        mc = SecurityMovingCorrelation(window, x, y)
+
+        for i in range(len(self.aapl['close'])):
+            data = dict(aapl=dict(close=self.aapl['close'][i],
+                                  open=self.aapl['open'][i]),
+                        ibm=dict(close=self.ibm['close'][i],
+                                 open=self.ibm['open'][i]))
+            mc.push(data)
+            if i < window:
+                start = 0
+            else:
+                start = i + 1 - window
+
+            if i < 1:
+                continue
+
+            value = mc.value
+            for name in value.index():
+                xs = self.dataSet[name]['close'][start:(i + 1)]
+                ys = self.dataSet[name]['open'][start:(i + 1)]
+                expected = np.corrcoef(xs, ys)[0, 1]
+                calculated = value[name]
+                self.assertAlmostEqual(expected, calculated, 12, 'at index {0}\n'
+                                                                 'expected:   {1:.12f}\n'
+                                                                 'calculated: {2:.12f}'.format(i, expected, calculated))
+
+    def testSecurityMovingCorrelationNested(self):
+        window = 120
+        x = SecurityLatestValueHolder('close')
+        y = SecurityLatestValueHolder('open')
+        z = x > y
+        mc = SecurityMovingCorrelation(window, x, z)
+
+        for i in range(len(self.aapl['close'])):
+            data = dict(aapl=dict(close=self.aapl['close'][i],
+                                  open=self.aapl['open'][i]),
+                        ibm=dict(close=self.ibm['close'][i],
+                                 open=self.ibm['open'][i]))
+            mc.push(data)
+            if i < window:
+                start = 0
+            else:
+                start = i + 1 - window
+
+            if i < 1:
+                continue
+
+            value = mc.value
+            for i, name in enumerate(value.index()):
+                if i >= window:
+                    xs = self.dataSet[name]['close'][start:(i + 1)]
+                    ys = self.dataSet[name]['open'][start:(i + 1)]
+                    zs = np.where(xs > ys, 1., 0.)
+                    expected = np.corrcoef(xs, zs)[0, 1]
+                    calculated = value[name]
+                    self.assertAlmostEqual(expected, calculated, 12, 'at index {0}\n'
+                                                                     'expected:   {1:.12f}\n'
+                                                                     'calculated: {2:.12f}'.format(i, expected, calculated))
 
     def testSecurityMovingQuantile(self):
         window = 10
